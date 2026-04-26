@@ -3,13 +3,32 @@ return {
     dependencies = {
         -- ui plugins to make debugging simplier
         "rcarriga/nvim-dap-ui",
-        "nvim-neotest/nvim-nio"
+        "nvim-neotest/nvim-nio",
+        "theHamsta/nvim-dap-virtual-text" -- show the values of the variables while the application is running
     },
     config = function()
         -- gain access to the dap plugin and its functions
         local dap = require("dap")
         -- gain access to the dap ui plugin and its functions
         local dapui = require("dapui")
+        -- to start virtual text showing the values of variables contextually
+        local dap_virtual_text = require("nvim-dap-virtual-text")
+
+        -- Dap Virtual Text
+        dap_virtual_text.setup()
+        --     {
+        --         enabled_commands = true,               -- create commands DapVirtualTextEnable, DapVirtualTextDisable, DapVirtualTextToggle, (DapVirtualTextForceRefresh for refreshing when debug adapter did not notify its termination)
+        --         highlight_changed_variables = false,    -- highlight changed values with NvimDapVirtualTextChanged, else always NvimDapVirtualText
+        --         highlight_new_as_changed = false,      -- highlight new variables in the same way as changed variables (if highlight_changed_variables)
+        --         show_stop_reason = true,               -- show stop reason when stopped for exceptions
+        --         commented = true,                     -- prefix virtual text with comment string
+        --         only_first_definition = true,          -- only show virtual text at first definition (if there are multiple)
+        --         all_references = false,                -- show virtual text on all all references of the variable (not only definitions)
+        --         clear_on_continue = false,             -- clear virtual text on "continue" (might cause flickering when stepping)
+        --         -- position of virtual text, see `:h nvim_buf_set_extmark()`, default tries to inline the virtual text. Use 'eol' to set to end of line
+        --         virt_text_pos = 'inline'
+        --     }
+        -- )
 
         -- Setup the dap ui with default configuration
         dapui.setup()
@@ -33,7 +52,7 @@ return {
 
         -- set a vim motion to close the debugging ui
         vim.keymap.set("n", "<leader>duc", dapui.close, {desc = "[D]ebug [U]i [c]lose"})
- 
+
         vim.keymap.set("n", "<leader>dk", dap.terminate, { desc = "[D]ebug [k]ill" })
 
         vim.keymap.set("n", "<leader>di", dap.repl.open, { desc = "[D]ebug [i]nspect" })

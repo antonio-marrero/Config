@@ -119,6 +119,8 @@ local function setup_jdtls()
     local extendedClientCapabilities = jdtls.extendedClientCapabilities
     -- Modify one property called resolveAdditionalTextEditsSupport and set it to true
     extendedClientCapabilities.resolveAdditionalTextEditsSupport = true
+    -- Add Parameter hints
+    extendedClientCapabilities.onCompletionItemSelectedCommand = "editor.action.triggerParameterHints"
 
     -- Set the command that starts the JDTLS language server jar
     local cmd = {
@@ -229,15 +231,19 @@ local function setup_jdtls()
             configuration = {
                 updateBuildConfiguration = "interactive"
             },
-            -- enable code lens in the lsp
+            -- enable code lens in the lsp. Code lens shows the number of references on a virtual line on top of each method
             referencesCodeLens = {
-                enabled = true
+                enabled = false
             },
             -- enable inlay hints for parameter names,
             inlayHints = {
-                parameterNames = {
-                    enabled = "all"
-                }
+                parameterNames = { enabled = "all" },
+                assignVariableTypes = { enabled = "all" },
+                compositeLiteralFields = { enabled = "all" },
+                compositeLiteralTypes = { enabled = "all" },
+                constantValues = { enabled = "all" },
+                functionTypeParameters = { enabled = "all" },
+                rangeVariableTypes = { enabled = "all" },
             }
         }
     }
@@ -265,8 +271,7 @@ local function setup_jdtls()
         require 'jdtls.setup'.add_commands()
         -- Refresh the codelens
         -- Code lens enables features such as code reference counts, implemenation counts, and more.
-        vim.lsp.codelens.refresh()
-
+           vim.lsp.codelens.enable(true, { bufnr = bufnr })
         -- Setup a function that automatically runs every time a java file is saved to refresh the code lens
         vim.api.nvim_create_autocmd("BufWritePost", {
             pattern = { "*.java" },
@@ -274,6 +279,8 @@ local function setup_jdtls()
                 local _, _ = pcall(vim.lsp.codelens.refresh)
             end
         })
+        -- enable inlay_hint on attach
+        vim.lsp.inlay_hint.enable(true,{bufnr =bufnr})
     end
 
     -- Create the configuration table for the start or attach function

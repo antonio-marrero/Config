@@ -10,7 +10,7 @@ return {
 			auto_reload_on_write = true,
             actions = {
                 open_file = {
-                    resize_window = true,
+                    resize_window = false,
             }},
             view = {
                 preserve_window_proportions = false,
