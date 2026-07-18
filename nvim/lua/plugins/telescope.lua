@@ -32,6 +32,13 @@ return {
             vim.keymap.set("n", "<leader>fw", builtin.grep_string, { desc = "[F]ind Word under Cursor" })
             -- set a vim motion to <Space> + f + s to search for the coding symbols in the current document
             vim.keymap.set("n", "<leader>fs", builtin.lsp_document_symbols, { desc = "[F]ind coding [s]ymbols" })
+            -- Lists git commits with diff preview, checkout action <cr>, reset mixed <C-r>m, reset soft <C-r>s and reset hard <C-r>h
+            vim.keymap.set("n", "<leader>gc", builtin.git_commits, { desc = "[g]it [c]ommits"})
+            -- Lists buffer's git commits with diff preview and checks them out on <cr>
+            vim.keymap.set("n", "<leader>go", builtin.git_bcommits, { desc = "[g]it [o]pened file commits"})
+            -- Lists all branches with log preview, checkout action <cr>, track action <C-t>, rebase action<C-r>, create action <C-a>, switch action <C-s>, delete action <C-d> and merge action <C-y>
+            vim.keymap.set("n", "<leader>gb", builtin.git_branches, { desc = "[g]it [b]ranches"})
+
             -- set a vim motion to <Space> + f + t to search for the files containing tags. They start with "- tags: ["
             -- vim.keymap.set("n", "<leader>ft", ":lua require('telescope').extensions.live_grep_args.live_grep_args({vimgrep_arguments={'rg tags'} })<CR>" , { desc = "[F]ind [t]ags"})
             -- vim.keymap.set("n", "<leader>ft", "y<ESC>:Telescope live_grep default_text=<c-r>0<CR>" , { desc = "[F]ind [t]ags"})
@@ -81,6 +88,10 @@ return {
                             ["<C-k>"] = actions.cycle_history_prev,
                         }
                     },
+                    file_ignore_patterns = {
+                      "node_modules",
+                      "target"
+                    }
                 },
                 -- use ui-select dropdown as our ui
                 extensions = {

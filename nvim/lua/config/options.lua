@@ -45,4 +45,27 @@ vim.g.loaded_node_provider = 0
 vim.g.loaded_python_provider = 0
 vim.g.loaded_python3_provider = 0
 
--- opts.rocks.hererocks = false -- disable hererocks
+-- For dev containers xsel or xclip don't work because there is no display
+-- We need to use OSC 52
+if os.getenv("DEVPOD") then
+    local function paste()
+      return {
+        vim.fn.split(vim.fn.getreg(""), "\n"),
+        vim.fn.getregtype(""),
+      }
+    end
+
+    local osc52 = require("vim.ui.clipboard.osc52")
+
+    vim.g.clipboard = {
+      name = "OSC 52",
+      copy = {
+        ["+"] = osc52.copy("+"),
+        ["*"] = osc52.copy("*"),
+      },
+      paste = {
+        ["+"] = paste, -- OSC 52 is too slow pasting and somtimes timesout
+        ["*"] = paste,
+      },
+    }
+end

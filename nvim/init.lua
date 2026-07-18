@@ -28,7 +28,7 @@ local opts = {
 		enabled = true,
 		-- Don't spam us with notification every time there is an update available
 		notify = false,
-	},
+	}
 }
 
 require("config.options")

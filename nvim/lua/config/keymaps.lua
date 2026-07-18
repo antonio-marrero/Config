@@ -28,6 +28,8 @@ vim.keymap.set("n", "<leader>wh", ":split<cr>", { desc = "[W]indow Split [H]oriz
 vim.keymap.set("n", "<C-w>y", "<C-w>15>", { desc = "[W]indow enlarge horizontal" })
 vim.keymap.set("n", "<C-w>u", "<C-w>10+", { desc = "[W]indow enlarge vertical" })
 
+vim.keymap.set("i", "<C-c>", "<Esc>", { desc = "Alternative key for Escape" })
+
 -- Stay in indent mode
 vim.keymap.set("v", "<", "<gv", { desc = "Indent left in visual mode" })
 vim.keymap.set("v", ">", ">gv", { desc = "Indent right in visual mode" })

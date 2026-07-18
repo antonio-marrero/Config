@@ -62,7 +62,21 @@ return {
                     -- close completion window
                     ["<C-e>"] = cmp.mapping.abort(),
                     -- confirm completion, only when you explicitly selected an option
-                    ["<CR>"] = cmp.mapping.confirm({ select = false})
+                    ["<CR>"] = cmp.mapping.confirm({ select = false}),
+                    ['<C-n>'] = cmp.mapping(function(fallback) -- To keep word completion working when <Ctlr-n>
+                          if cmp.visible() then
+                            cmp.select_next_item()
+                          else
+                            cmp.complete() -- This forces the word completion menu to open
+                          end
+                        end, { 'i', 'c' }),
+                    ['<C-p>'] = cmp.mapping(function(fallback)
+                      if cmp.visible() then
+                        cmp.select_prev_item()
+                      else
+                        fallback()
+                      end
+                    end, { 'i', 'c' }),
                 }),
                 -- Where and how should cmp rank and find completions
                 -- Order matters, cmp will provide lsp suggestions above all else

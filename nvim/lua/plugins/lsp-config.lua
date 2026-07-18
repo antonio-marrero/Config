@@ -23,6 +23,7 @@ return {
 			-- ensure the java debug adapter is installed
 			require("mason-nvim-dap").setup({
 				ensure_installed = { "java-debug-adapter", "java-test" },
+                automatic_installation = true
 			})
 		end,
 	},
@@ -46,7 +47,7 @@ return {
 			-- 	capabilities = capabilities,
 			-- })
 			vim.lsp.config("lua_ls", {
-				capabilities = capabilities
+				capabilities = capabilities,
 			})
 
 			-- setup the typescript language server
@@ -54,24 +55,24 @@ return {
 				capabilities = capabilities,
 			})
 
-            -- configure yamlls ls. Files containing k8 are considered that follow kubernetes schemas:
+			-- configure yamlls ls. Files containing k8 are considered that follow kubernetes schemas:
 			vim.lsp.config("yamlls", {
-                capabilities = capabilities,
-                settings = {
-                    yaml = {
-                      schemas = {
-                         kubernetes = "*k8*.yaml",
-                                -- ["http://json.schemastore.org/github-workflow"] = ".github/workflows/*",
-                                -- ["http://json.schemastore.org/github-action"] = ".github/action.{yml,yaml}",
-                                -- ["http://json.schemastore.org/ansible-stable-2.9"] = "roles/tasks/**/*.{yml,yaml}",
-                                -- ["http://json.schemastore.org/prettierrc"] = ".prettierrc.{yml,yaml}",
-                                -- ["http://json.schemastore.org/kustomization"] = "kustomization.{yml,yaml}",
-                                -- ["http://json.schemastore.org/chart"] = "Chart.{yml,yaml}",
-                                -- ["http://json.schemastore.org/circleciconfig"] = ".circleci/**/*.{yml,yaml}",
-                      }
-                    }
-                  }
-            })
+				capabilities = capabilities,
+				settings = {
+					yaml = {
+						schemas = {
+							kubernetes = "*k8*.yaml",
+							-- ["http://json.schemastore.org/github-workflow"] = ".github/workflows/*",
+							-- ["http://json.schemastore.org/github-action"] = ".github/action.{yml,yaml}",
+							-- ["http://json.schemastore.org/ansible-stable-2.9"] = "roles/tasks/**/*.{yml,yaml}",
+							-- ["http://json.schemastore.org/prettierrc"] = ".prettierrc.{yml,yaml}",
+							-- ["http://json.schemastore.org/kustomization"] = "kustomization.{yml,yaml}",
+							-- ["http://json.schemastore.org/chart"] = "Chart.{yml,yaml}",
+							-- ["http://json.schemastore.org/circleciconfig"] = ".circleci/**/*.{yml,yaml}",
+						},
+					},
+				},
+			})
 
 			-- setup the sqls language server
 			vim.lsp.config("sqls", {
@@ -104,4 +105,18 @@ return {
 			vim.keymap.set("n", "<leader>cD", vim.lsp.buf.declaration, { desc = "[C]ode Goto [D]eclaration" })
 		end,
 	},
+    {
+        "jay-babu/mason-null-ls.nvim",
+        event = { "BufReadPre", "BufNewFile" }, -- formatters will be installed and started when a correspoding file is opened
+        dependencies = {
+          "williamboman/mason.nvim",
+          "nvimtools/none-ls.nvim",
+        },
+        config = function()
+          require("mason-null-ls").setup({
+              ensure_installed = { "prettier", "stylua", "eslint_d", "jq","google-java-format" }, -- formatters and linters to install
+              automatic_installation = true
+          })
+        end,
+    },
 }

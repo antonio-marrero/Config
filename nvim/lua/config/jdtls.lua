@@ -1,37 +1,49 @@
+local function get_packages_path()
+    local mason_directory = os.getenv("MASON") -- In devContainers the env var MASON has the path to mason_directory
+    if mason_directory  == nil then
+        mason_directory = os.getenv("HOME") .. "/.local/share/nvim/mason"
+    end
+    return mason_directory .. "/packages"
+end
+
+local function get_os()
+    local p = io.popen("uname -s", "r")
+    if not p then return "Windows" end -- io.popen fails on basic Windows
+    local uname = p:read("*l")
+    p:close()
+
+    if uname == "Darwin" then
+        return "mac"
+    elseif uname == "Linux" then
+        return "linux"
+    else
+        return "win"
+    end
+end
+
 local function get_jdtls()
-    -- Get the Mason Registry to gain access to downloaded binaries
-    local mason_registry = require("mason-registry")
-    -- Find the JDTLS package in the Mason Regsitry
-    local jdtls = mason_registry.get_package("jdtls")
     -- Find the full path to the directory where Mason has downloaded the JDTLS binaries
-    local jdtls_path = "/home/antonio/.local/share/nvim/mason/packages/jdtls" --jdtls:get_install_path()
+    local jdtls_path = get_packages_path() .. "/jdtls"
     -- Obtain the path to the jar which runs the language server
     local launcher = vim.fn.glob(jdtls_path .. "/plugins/org.eclipse.equinox.launcher_*.jar")
-     -- Declare white operating system we are using, windows use win, macos use mac
-    local SYSTEM = "linux"
     -- Obtain the path to configuration files for your specific operating system
-    local config = jdtls_path .. "/config_" .. SYSTEM
+    local config = jdtls_path .. "/config_" .. get_os()
     -- Obtain the path to the Lomboc jar
     local lombok = jdtls_path .. "/lombok.jar"
+
     return launcher, config, lombok
 end
 
 local function get_bundles()
-    -- Get the Mason Registry to gain access to downloaded binaries
-    local mason_registry = require("mason-registry")
-    -- Find the Java Debug Adapter package in the Mason Registry
-    local java_debug = mason_registry.get_package("java-debug-adapter")
     -- Obtain the full path to the directory where Mason has downloaded the Java Debug Adapter binaries
-    local java_debug_path = "/home/antonio/.local/share/nvim/mason/packages/java-debug-adapter" -- java_debug:get_install_path()
+    local java_debug_path = get_packages_path() .. "/java-debug-adapter" -- java_debug:get_install_path()
 
     local bundles = {
         vim.fn.glob(java_debug_path .. "/extension/server/com.microsoft.java.debug.plugin-*.jar", 1)
     }
 
-    -- Find the Java Test package in the Mason Registry
-    local java_test = mason_registry.get_package("java-test")
     -- Obtain the full path to the directory where Mason has downloaded the Java Test binaries
-    local java_test_path = "/home/antonio/.local/share/nvim/mason/packages/java-test" -- java_test:get_install_path()
+    local java_test_path = get_packages_path() .. "/java-test" -- java_test:get_install_path()
      -- Add all of the Jars for running tests in debug mode to the bundles list
      vim.list_extend(bundles, vim.split(vim.fn.glob(java_test_path .. "/extension/server/*.jar", 1), "\n"))
 
@@ -42,7 +54,7 @@ local function get_workspace()
     -- Get the home directory of your operating system
     local home = os.getenv "HOME"
     -- Declare a directory where you would like to store project information
-    local workspace_path = home .. "/Shared/work/ai/mongovector" -- "/Shared/work/ai/" -- "/Shared/work/uefa/"  -- "/Shared/work/ai/" "/Shared/work/ai/spring-ai-zero-to-hero/"   -- "/Shared/work/ai/" -- 
+    local workspace_path = home .. "/workspaces/" -- "/Shared/work/ai/mongovector" -- "/Shared/work/ai/" -- "/Shared/work/uefa/"  -- "/Shared/work/ai/" "/Shared/work/ai/spring-ai-zero-to-hero/"   -- "/Shared/work/ai/" -- 
     -- Determine the project name
     local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
     -- Create the workspace directory by concatenating the designated workspace path and the project name
@@ -98,7 +110,7 @@ local function setup_jdtls()
 
     -- Determine the root directory of the project by looking for these specific markers
     local root_dir = jdtls.setup.find_root({ '.git', 'mvnw', 'gradlew', 'pom.xml', 'build.gradle' });
-    
+
     -- Tell our JDTLS language features it is capable of
     local capabilities = {
         workspace = {
@@ -127,7 +139,6 @@ local function setup_jdtls()
         'java',
         '-Declipse.application=org.eclipse.jdt.ls.core.id1',
         '-Dosgi.bundles.defaultStartLevel=4',
-        -- '-Dorg.osgi.framework.system.capabilities=osgi.ee; osgi.ee=\"JavaSE\";version:List=\"1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,9.0,10.0,11.0,12.0,13.0,14.0,15.0,16.0,17.0,21.0\"',
         '-Declipse.product=org.eclipse.jdt.ls.core.product',
         '-Dlog.protocol=true',
         '-Dlog.level=ALL',
@@ -136,12 +147,12 @@ local function setup_jdtls()
         '--add-modules=ALL-SYSTEM',
         '--add-opens', 'java.base/java.util=ALL-UNNAMED',
         '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
-        '--add-modules', 'jdk.incubator.vector',
+        -- '--add-modules', 'jdk.incubator.vector',
         '-javaagent:' .. lombok,
         '-jar',
         launcher,
-        '-configuration', '/home/antonio/.local/share/nvim/mason/packages/jdtls/config_linux',
-        -- os_config,
+        '-configuration',
+        os_config,
         '-data',
         workspace_dir
     }

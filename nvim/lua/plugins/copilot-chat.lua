@@ -21,7 +21,7 @@ return {
   {
     "CopilotC-Nvim/CopilotChat.nvim",
     dependencies = {
-      { "github/copilot.vim" }, -- or zbirenbaum/copilot.lua
+      {"zbirenbaum/copilot.lua"},  -- or { "github/copilot.vim" },
       { "nvim-lua/plenary.nvim", branch = "master" }, -- for curl, log and async functions
     },
     build = "make tiktoken", -- Only on MacOS or Linux
@@ -30,7 +30,7 @@ return {
       answer_header = "## Copilot ",
       error_header = "## Error ",
       prompts = prompts,
-      -- model = "claude-3.7-sonnet",
+      --model = "gpt-4o",
       mappings = {
         -- Use tab for completion
         complete = {
@@ -60,6 +60,11 @@ return {
         -- Show help
         show_help = {
           normal = "g?",
+        },
+        providers = {
+            github_models = {
+              disabled = true, -- Enable the github_models provider
+            },
         },
       },
   },
@@ -186,7 +191,7 @@ return {
       -- Toggle Copilot Chat Vsplit
       { "<leader>av", "<cmd>CopilotChatToggle<cr>", desc = "CopilotChat - Toggle [V]split" },
       -- Copilot Chat Models
-      { "<leader>am", "<cmd>CopilotChatModels<cr>", desc = "CopilotChat - Select [M]odels" },
+      { "<leader>a?", "<cmd>CopilotChatModels<cr>", desc = "CopilotChat - Select Models" },
       -- Copilot Chat Agents
       { "<leader>aa", "<cmd>CopilotChatAgents<cr>", desc = "CopilotChat - Select [A]gents" },
     }
