@@ -37,7 +37,7 @@ return {
 
     vim.keymap.set({ "x", "o" }, "im", function()
       require "nvim-treesitter-textobjects.select".select_textobject("@function.inner", "textobjects")
-    end, {desc = "Select inner part of a function call"})
+    end, {desc = "Select inner part of a method/function definition"})
 
     vim.keymap.set({ "x", "o" }, "ac", function()
       require "nvim-treesitter-textobjects.select".select_textobject("@class.outer", "textobjects")
@@ -139,7 +139,7 @@ return {
 
     vim.keymap.set({ "n", "x", "o" }, "]a", function()
       require("nvim-treesitter-textobjects.move").goto_next_start("@parameter.inner", "textobjects")
-    end, {desc = "Next parameter start"})
+    end, {desc = "Next argument start"})
 
     vim.keymap.set({ "n", "x", "o" }, "]s", function()
       require("nvim-treesitter-textobjects.move").goto_next_start("@local.scope", "locals")

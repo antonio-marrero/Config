@@ -21,53 +21,42 @@ return {
   {
     "CopilotC-Nvim/CopilotChat.nvim",
     dependencies = {
-      {"zbirenbaum/copilot.lua"},  -- or { "github/copilot.vim" },
-      { "nvim-lua/plenary.nvim", branch = "master" }, -- for curl, log and async functions
+      { "nvim-lua/plenary.nvim", branch = "master" },
     },
-    build = "make tiktoken", -- Only on MacOS or Linux
+    build = "make tiktoken",
     opts = {
       question_header = "## User ",
       answer_header = "## Copilot ",
       error_header = "## Error ",
       prompts = prompts,
-      --model = "gpt-4o",
+      temperature = 0.1,
+
       mappings = {
-        -- Use tab for completion
         complete = {
           detail = "Use @<Tab> or /<Tab> for options.",
           insert = "<Tab>",
         },
-        -- Close the chat
         close = {
           normal = "q",
           insert = "<C-c>",
         },
-        -- Reset the chat buffer
         reset = {
           normal = "<C-x>",
           insert = "<C-x>",
         },
-        -- Submit the prompt to Copilot
         submit_prompt = {
           normal = "<CR>",
           insert = "<C-CR>",
         },
-        -- Accept the diff
         accept_diff = {
           normal = "<C-y>",
           insert = "<C-y>",
         },
-        -- Show help
         show_help = {
           normal = "g?",
         },
-        providers = {
-            github_models = {
-              disabled = true, -- Enable the github_models provider
-            },
-        },
       },
-  },
+    },
     config = function(_, opts)
       local chat = require("CopilotChat")
 
@@ -75,7 +64,7 @@ return {
       local user = hostname or vim.env.USER or "User"
       opts.question_header = "  " .. user .. " "
       opts.answer_header = "  Copilot "
-      -- Override the git prompts message
+
       opts.prompts.Commit = {
         prompt = '> #git:staged\n\nWrite commit message with commitizen convention. Write clear, informative commit messages that explain the "what" and "why" behind changes, not just the "how".',
       }
@@ -87,7 +76,6 @@ return {
         chat.ask(args.args, { selection = select.visual })
       end, { nargs = "*", range = true })
 
-      -- Inline chat with Copilot
       vim.api.nvim_create_user_command("CopilotChatInline", function(args)
         chat.ask(args.args, {
           selection = select.visual,
@@ -101,12 +89,10 @@ return {
         })
       end, { nargs = "*", range = true })
 
-      -- Restore CopilotChatBuffer
       vim.api.nvim_create_user_command("CopilotChatBuffer", function(args)
         chat.ask(args.args, { selection = select.buffer })
       end, { nargs = "*", range = true })
 
-      -- Custom buffer for CopilotChat
       vim.api.nvim_create_autocmd("BufEnter", {
         pattern = "copilot-*",
         callback = function()
@@ -116,15 +102,10 @@ return {
       })
     end,
     keys = {
-      -- Show prompts actions
       {
         "<leader>ap",
         function()
-          require("CopilotChat").select_prompt({
-            context = {
-              "buffers",
-            },
-          })
+          require("CopilotChat").select_prompt({ context = { "buffers" } })
         end,
         desc = "CopilotChat - Prompt actions",
       },
@@ -136,13 +117,11 @@ return {
         mode = "x",
         desc = "CopilotChat - Prompt actions",
       },
-      -- Code related commands
       { "<leader>ae", "<cmd>CopilotChatExplain<cr>", desc = "CopilotChat - [E]xplain code" },
       { "<leader>at", "<cmd>CopilotChatTests<cr>", desc = "CopilotChat - Generate [T]ests" },
       { "<leader>ar", "<cmd>CopilotChatReview<cr>", desc = "CopilotChat - [r]eview code" },
       { "<leader>aR", "<cmd>CopilotChatRefactor<cr>", desc = "CopilotChat - [R]efactor code" },
       { "<leader>an", "<cmd>CopilotChatBetterNamings<cr>", desc = "CopilotChat - Better [N]aming" },
-      -- Chat with Copilot in visual mode
       {
         "<leader>av",
         ":CopilotChatVisual",
@@ -155,7 +134,6 @@ return {
         mode = "x",
         desc = "CopilotChat - Inline chat",
       },
-      -- Custom input for CopilotChat
       {
         "<leader>ai",
         function()
@@ -166,7 +144,6 @@ return {
         end,
         desc = "CopilotChat - Ask input",
       },
-      -- Generate commit message based on the git diff
       {
         "<leader>am",
         "<cmd>CopilotChatCommit<cr>",
@@ -184,15 +161,10 @@ return {
         end,
         desc = "CopilotChat - Quick chat",
       },
-      -- Fix the issue with diagnostic
       { "<leader>af", "<cmd>CopilotChatFixError<cr>", desc = "CopilotChat - [F]ix Diagnostic" },
-      -- Clear buffer and chat history
       { "<leader>al", "<cmd>CopilotChatReset<cr>", desc = "CopilotChat - C[L]ear buffer and chat history" },
-      -- Toggle Copilot Chat Vsplit
       { "<leader>av", "<cmd>CopilotChatToggle<cr>", desc = "CopilotChat - Toggle [V]split" },
-      -- Copilot Chat Models
       { "<leader>a?", "<cmd>CopilotChatModels<cr>", desc = "CopilotChat - Select Models" },
-      -- Copilot Chat Agents
       { "<leader>aa", "<cmd>CopilotChatAgents<cr>", desc = "CopilotChat - Select [A]gents" },
     }
   }

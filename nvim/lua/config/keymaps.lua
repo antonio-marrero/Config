@@ -34,5 +34,32 @@ vim.keymap.set("i", "<C-c>", "<Esc>", { desc = "Alternative key for Escape" })
 vim.keymap.set("v", "<", "<gv", { desc = "Indent left in visual mode" })
 vim.keymap.set("v", ">", ">gv", { desc = "Indent right in visual mode" })
 
+-- Clrt-a to select all
+vim.keymap.set("n", "<C-a>", 'ggVG', { desc = "Select All"})
 -- Paste without losing the register
 -- vim.keymap.set("x", "leader p", "\"_dP", { desc = "Keep register after pasting" })
+
+-- To zoom in and out the current window
+local is_zoomed = false
+local zoom_restcmd = ""
+
+-- Add a keybinding to toggle zooming the current window
+vim.keymap.set("n", "<C-w>z", function()
+  if is_zoomed then
+    vim.cmd(zoom_restcmd)
+    is_zoomed = false
+  else
+    zoom_restcmd = vim.fn.winrestcmd()
+    vim.cmd("wincmd _ | wincmd |")
+    is_zoomed = true
+  end
+end, { desc = "Toggle window [z]oom" })
+
+-- Open the quickfix list with diagnostics
+vim.keymap.set("n", "<leader>q", function()
+  vim.diagnostic.setqflist()
+end, { desc = "Add diagnostics to [q]uickfix list", silent = true })
+
+-- Open and close the quickfix list
+ vim.keymap.set("n", "<leader>co", "<cmd>copen<CR>", { desc = "Qui[c]kfix [o]pen" })
+ vim.keymap.set("n", "<leader>cc", "<cmd>cclose<CR>", { desc = "Qui[c]kfix [c]lose" })
