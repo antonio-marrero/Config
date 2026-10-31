@@ -92,12 +92,13 @@ return {
 				vim.lsp.inline_completion.enable()
 			end
 
-			-- 2. Map 'Alt + a' to accept the native ghost text suggestion
+			-- -- 2. Map 'Alt + a' to accept the native ghost text suggestion
 			vim.keymap.set("i", "<M-a>", function()
 				if vim.lsp.inline_completion then
 					vim.lsp.inline_completion.get()
 				end
 			end, { desc = "Accept Copilot Inline Suggestion" })
+
 
 			-- Your standard workspace navigation mappings remain completely untouched below
 			vim.keymap.set("n", "<leader>ch", vim.lsp.buf.hover, { desc = "[c]ode [h]over Documentation" })

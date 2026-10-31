@@ -15,6 +15,23 @@ local prompts = {
   Spelling = "Please correct any grammar and spelling errors in the following text.",
   Wording = "Please improve the grammar and wording of the following text.",
   Concise = "Please rewrite the following text to make it more concise.",
+-- OpenSpec / SDD Lifecycle Prompts
+  OpsxExplore = {
+    prompt = "Review the current repository structure and dependencies. Explore how we might implement this feature request safely: ",
+  },
+  OpsxPropose = {
+    prompt = "Read the design parameters in `.github/prompts/opsx-propose.prompt.md` if available. Create a new change folder under `openspec/changes/<change-name>/` containing `proposal.md`, `design.md`, and `tasks.md` for this feature: ",
+  },
+  -- OpenSpec Pure Context Apply Prompt (Sandboxed Client Compatible)
+  OpsxApply = {
+      prompt = "Act as an OpenSpec execution assistant. Look closely at the active features in my open `tasks.md` buffer. For the unchecked tasks, provide the clean code block modifications for our tech stack. Do not attempt to run any local shell or terminal commands. @copilot #buffer:active #files ",
+  },
+  -- OpsxApply = {
+  --     prompt = "Act as an OpenSpec executor agent. First, read and strictly adhere to the instructions provided in `.github/prompts/opsx-apply.prompt.md`. Look closely at the active files in `openspec/changes/` and implement the tasks outlined in `tasks.md`. Only modify or create code files that strictly satisfy the specifications. @copilot #buffer:active #files ",
+  -- },
+  OpsxArchive = {
+    prompt = "Consolidate the active Delta Specs under `openspec/changes/` back into the main `openspec/specs/` directory and remove the active change directory.",
+  },
 }
 
 return {
@@ -30,6 +47,9 @@ return {
       error_header = "## Error ",
       prompts = prompts,
       temperature = 0.1,
+      trusted_tools = true, -- Allow all tools to be used without confirmation
+      -- log_level = "debug",
+      model = "gpt-6-luna",
 
       mappings = {
         complete = {
@@ -166,6 +186,38 @@ return {
       { "<leader>av", "<cmd>CopilotChatToggle<cr>", desc = "CopilotChat - Toggle [V]split" },
       { "<leader>a?", "<cmd>CopilotChatModels<cr>", desc = "CopilotChat - Select Models" },
       { "<leader>aa", "<cmd>CopilotChatAgents<cr>", desc = "CopilotChat - Select [A]gents" },
+
+-- OpenSpec Keyboard Bindings
+      {
+        "<leader>ox",
+        function()
+          local input = vim.fn.input("Explore Architecture: ")
+          if input ~= "" then
+            vim.cmd("CopilotChatOpsxExplore " .. input)
+          end
+        end,
+        desc = "OpenSpec - [X]plore requirement space",
+      },
+      {
+        "<leader>op",
+        function()
+          local input = vim.fn.input("Propose Feature Name: ")
+          if input ~= "" then
+            vim.cmd("CopilotChatOpsxPropose " .. input)
+          end
+        end,
+        desc = "OpenSpec - [P]ropose new spec changes",
+      },
+      {
+        "<leader>oa",
+        "<cmd>CopilotChatOpsxApply<cr>",
+        desc = "OpenSpec - [A]pply changes to code files",
+      },
+      {
+        "<cmd>CopilotChatOpsxArchive<cr>",
+        "<leader>oz",
+        desc = "OpenSpec - Archive/Canno[z]e change into core spec",
+      },
     }
   }
 }
